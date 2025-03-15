@@ -17,17 +17,18 @@ services:
       PUID: ${PUID:?Missing PUID}
       PGID: ${PGID:?Missing PGID}
       TZ: ${TZ:-UTC}
-      VIRTUAL_HOST: ${VIRTUAL_HOST:?Missing VIRTUAL_HOST}
-      LETSENCRYPT_HOST: ${VIRTUAL_HOST:?Missing VIRTUAL_HOST}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-      DEBUG: ${DEBUG:-false}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.unifi-controller.entrypoints=websecure"
+      - "traefik.http.routers.unifi-controller.rule=Host(`$DOMAIN`)"
+      - "traefik.http.routers.unifi-controller.tls.certresolver=http-challenge"
     volumes:
       - ./:/config
     networks:
       - network
-      - nginx-proxy
+      - traefik-proxy
 networks:
   network:
-  nginx-proxy:
-    name: nginx-proxy
+  traefik-proxy:
+    name: traefik-proxy
     external: true
