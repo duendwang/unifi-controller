@@ -2,6 +2,12 @@ services:
   controller:
     image: lscr.io/linuxserver/unifi-controller
     restart: unless-stopped
+    user: ${PUID:-1000}:${PGID:-1000}
+    security_opt:
+      - "no-new-privileges:true"
+    cap-drop:
+      - SETUID
+      - SETGID
     expose:
       - 8443 #Web admin port
       - 3478/udp #STUN port
@@ -21,6 +27,8 @@ services:
       - "traefik.http.routers.unifi-controller.entrypoints=websecure"
       - "traefik.http.routers.unifi-controller.rule=Host(`$DOMAIN`)"
       - "traefik.http.routers.unifi-controller.tls.certresolver=http-challenge"
+      - "traefik.http.services.unifi-controller.loadbalancer.server.port=8443"
+      - "traefik.http.services.unifi-controller.loadbalancer.server.scheme=https"
     volumes:
       - ./:/config
     networks:
