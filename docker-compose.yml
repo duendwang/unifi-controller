@@ -2,12 +2,8 @@ services:
   controller:
     image: lscr.io/linuxserver/unifi-controller
     restart: unless-stopped
-    user: ${PUID:-1000}:${PGID:-1000}
     security_opt:
       - "no-new-privileges:true"
-    cap_drop:
-      - SETUID
-      - SETGID
     expose:
       - 8443 #Web admin port
       - 3478/udp #STUN port
@@ -37,5 +33,4 @@ services:
 networks:
   network:
   traefik-proxy:
-    name: traefik-proxy
     external: true
